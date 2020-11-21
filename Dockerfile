@@ -1,15 +1,19 @@
-FROM composer AS composer
+FROM composer:1 AS composer
 WORKDIR /app
 ADD . /app
+RUN composer global require hirak/prestissimo
 RUN composer install \
-    && ./vendor/bin/phpcs . \
-    && ./vendor/bin/phpunit
+    && ./vendor/bin/phpcs --ignore=_build . \
+    && ./vendor/bin/phpunit \
+    && ./vendor/bin/psalm --show-info=false \
+    && ./check-refs-readmes
 
 FROM python AS sphinx_build
 WORKDIR /app
 COPY --from=composer /app /app
 RUN pip3 install Sphinx sphinx_rtd_theme
-RUN make html
+ARG language=en
+RUN make -e "SPHINXOPTS=-D language='${language}'" html
 
 FROM nginx
 WORKDIR /usr/share/nginx/html
