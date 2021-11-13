@@ -1,14 +1,13 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace DesignPatterns\Structural\Bridge;
 
 abstract class Service
 {
-    protected Formatter $implementation;
-
-    public function __construct(Formatter $printer)
+    public function __construct(protected Formatter $implementation)
     {
-        $this->implementation = $printer;
     }
 
     public function setImplementation(Formatter $printer)
